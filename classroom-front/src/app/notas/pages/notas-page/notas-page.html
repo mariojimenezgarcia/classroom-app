@@ -1,0 +1,94 @@
+<div class="p-6">
+  <h2 class="text-xl font-semibold mb-4">Notas</h2>
+
+  <!-- PADRE: selector de hijo -->
+  <div *ngIf="rol === 'padres'" class="mb-6">
+    <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
+      <label class="text-sm text-gray-700 font-medium">Selecciona un hijo:</label>
+
+      <select
+        class="border border-gray-300 rounded-lg px-3 py-2 bg-white min-w-[260px]"
+        [value]="selectedAlumnoId ?? ''"
+        (change)="onSelectHijo($event)"
+      >
+        <option value="" disabled>-- Elige un hijo --</option>
+        <option *ngFor="let h of misHijos" [value]="h.alumnoId">
+          {{ h.nombre }}
+        </option>
+      </select>
+    </div>
+
+    <div *ngIf="loadingHijos" class="text-gray-600 mt-2">Cargando hijos...</div>
+    <div *ngIf="hijosError" class="text-red-600 mt-2">{{ hijosError }}</div>
+  </div>
+
+  <!-- CARGA / ERROR notas -->
+  <div *ngIf="loadingNotas" class="text-gray-600">Cargando notas...</div>
+  <div *ngIf="notasError" class="text-red-600">{{ notasError }}</div>
+
+  <!-- VACÍO -->
+  <div *ngIf="!loadingNotas && notasPorClase.length === 0" class="text-gray-500">
+    No hay notas todavía.
+  </div>
+
+  <!-- AGRUPADO POR CLASE -->
+  <div class="space-y-6" *ngIf="notasPorClase.length > 0">
+    <div *ngFor="let grupo of notasPorClase" class="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div class="px-4 py-3 bg-gray-50 flex items-center justify-between">
+        <div class="font-semibold text-gray-800">{{ grupo.nombreClase }}</div>
+        <div class="text-xs text-gray-500">{{ grupo.items.length }} item(s)</div>
+      </div>
+
+      <div class="overflow-auto">
+        <table class="min-w-[950px] w-full text-sm">
+          <thead class="bg-white text-gray-700">
+            <tr class="border-b">
+              <th class="text-left px-4 py-3">Título</th>
+              <th class="text-left px-4 py-3">Tipo</th>
+              <th class="text-left px-4 py-3">Fecha entrega</th>
+              <th class="text-left px-4 py-3">Nota</th>
+              <th class="text-left px-4 py-3">Máx.</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let n of grupo.items" class="border-t">
+              <td class="px-4 py-3 font-medium text-gray-900">{{ n.titulo }}</td>
+
+              <td class="px-4 py-3">
+                <span class="px-2 py-1 rounded-full text-xs"
+                      [ngClass]="{
+                        'bg-indigo-50 text-indigo-700': n.tipo === 'Tarea',
+                        'bg-amber-50 text-amber-700': n.tipo === 'Examen'
+                      }">
+                  {{ n.tipo }}
+                </span>
+              </td>
+
+              <td class="px-4 py-3 text-gray-700">
+                {{ n.fechaEntrega | date:'dd/MM/yyyy HH:mm' }}
+              </td>
+
+              <td class="px-4 py-3">
+                <span *ngIf="n.nota !== null; else evaluando"
+                      class="px-2 py-1 rounded-lg bg-green-50 text-green-700 font-semibold">
+                  {{ n.nota }}
+                </span>
+
+                <ng-template #evaluando>
+                  <span class="px-2 py-1 rounded-lg bg-gray-100 text-gray-600">
+                    Evaluando
+                  </span>
+                </ng-template>
+              </td>
+
+              <td class="px-4 py-3 text-gray-700">
+                {{ n.puntuacionMaxima }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

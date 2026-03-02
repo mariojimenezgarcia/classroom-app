@@ -1,0 +1,71 @@
+   <h1 class="text-2xl font-bold text-center mb-6">Crear cuenta</h1>
+
+    <form (ngSubmit)="register()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Nombre</label>
+        <input
+          [(ngModel)]="nombre"
+          name ="nombre"
+          type="text"
+          placeholder="Tu nombre"
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Email</label>
+        <input
+         [(ngModel)]="email"
+          name="email"
+          type="email"
+          placeholder="correo@ejemplo.com"
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+        <input
+        [(ngModel)]="password"
+          name="password"
+          type="password"
+          placeholder="********"
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Rol</label>
+        <select
+          [(ngModel)]="rol"
+          name="rol"
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          <option value="">Selecciona un rol</option>
+          <option value="1">Admin</option>
+          <option value="2">Profesor</option>
+          <option value="3">Alumno</option>
+          <option value="4">Padres</option>
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition"
+      >
+        Registrarse
+      </button>
+      <p 
+        *ngIf="errorMsg" 
+        class="mt-4 text-center text-sm font-medium text-red-600 bg-red-100 border border-red-300 rounded-md py-2 px-3">
+        {{ errorMsg }}
+      </p>
+    </form>
+
+    <p class="text-sm text-center text-gray-600 mt-6">
+      ¿Ya tienes cuenta?
+      <a routerLink="auth/login" class="text-green-600 hover:underline">Inicia sesión</a>
+    </p>
+ 
+
+
