@@ -1,0 +1,17 @@
+<div class="space-y-4">
+
+  <div *ngIf="!tareas.length"
+       class="rounded-xl border bg-slate-50 p-4 text-sm text-slate-600">
+    No hay tareas todavía.
+  </div>
+
+  <div *ngFor="let p of tareas">
+    <app-card-publicacion
+      [publicacion]="p"
+      [miUsuarioId]="miUsuarioId"
+      [rol]="rol"
+      (publicacionBorrada)="quitarPublicacion($event)">
+    </app-card-publicacion>
+  </div>
+
+</div>

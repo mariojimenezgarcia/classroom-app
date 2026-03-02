@@ -1,0 +1,110 @@
+<div class="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))] sm:[grid-template-columns:repeat(auto-fit,minmax(380px,1fr))] lg:[grid-template-columns:repeat(auto-fit,minmax(420px,1fr))]">
+
+  <div *ngFor="let clase of clases"
+     (click)="irATablon(clase.id)"
+     class="w-full max-w-[460px] justify-self-center rounded-xl border border-gray-200 bg-white shadow-sm cursor-pointer hover:shadow-md transition">
+    <!-- Header / Cover -->
+    <div class="relative h-28 overflow-hidden"
+         [ngStyle]="{ 'background-color': clase.color || '#6d28d9' }">
+
+
+      <!-- Overlay oscuro -->
+      <div class="absolute inset-0 bg-black/25"></div>
+
+      <!-- Título + subtítulo -->
+      <div class="absolute left-4 top-4 right-20 text-white">
+        <h3 class="text-lg font-semibold leading-snug line-clamp-2">
+          {{ clase.nombre }}
+        </h3>
+
+        <p class="mt-1 text-sm font-medium opacity-95 line-clamp-1">
+          Curso : {{ clase.curso || 'Curso' }}
+        </p>
+
+        <p class="mt-0.5 text-xs opacity-90 line-clamp-1">
+          profesor : {{ clase.profesorNombre || 'Profesor' }}
+        </p>
+      </div>
+
+      <!-- Avatar círculo con inicial -->
+      <div class="absolute right-4 top-14 h-14 w-14 rounded-full bg-fuchsia-600 text-white grid place-items-center text-2xl font-semibold shadow-md ring-4 ring-white">
+        {{ clase.profesorNombre?.charAt(0) }}
+      </div>
+
+    </div>
+
+    <!-- Body -->
+    <div class="h-24 bg-white px-4 pt-4">
+      <p class="text-sm text-gray-500">
+        aula : {{ clase.aula }}
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="border-t border-gray-200 px-3 py-2">
+      <div class="flex items-center justify-end gap-1">
+
+        <!-- Personas -->
+        <button [routerLink]="['/home/mostrarAlumnos', clase.id, ]" class="h-10 w-10 grid place-items-center rounded-full hover:bg-gray-100 transition">
+          <img src="/images/group.png" 
+              alt="Password"
+              class="h-5 w-5 object-contain">
+        </button>
+
+        <!-- Candado -->
+        <button
+          *ngIf="rol === 'profesor'"
+          class="h-10 w-10 grid place-items-center rounded-full hover:bg-gray-100 transition"
+          [routerLink]="['/home/mostrarCodigoAcceso', clase.id, ]"
+          aria-label="Ver código de la clase"
+        >
+          <img
+            src="/images/password.png"
+            alt="Password"
+            class="h-5 w-5 object-contain"
+          />
+        </button>
+
+
+
+
+        <!-- Menú -->
+        <div class="relative" (click)="$event.stopPropagation()">
+
+        <!-- Botón 3 puntos -->
+        <button
+          (click)="toggleMenu(clase.id)"
+          class="h-10 w-10 grid place-items-center rounded-full hover:bg-gray-100 transition"
+        >
+          <svg class="h-5 w-5 text-gray-700" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="5" r="1.8"></circle>
+            <circle cx="12" cy="12" r="1.8"></circle>
+            <circle cx="12" cy="19" r="1.8"></circle>
+          </svg>
+        </button>
+
+        <!-- Dropdown -->
+        <div
+          *ngIf="menuAbierto === clase.id"
+          class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200 z-50 overflow-hidden"
+        >
+          <button
+            *ngIf="rol === 'profesor'"
+            (click)="editarClase(clase.id)"
+            class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
+          >
+             Editar clase
+          </button>
+
+          <button
+            (click)="borrarClase(clase.id)"
+            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+          >
+            Borrar clase 
+          </button>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

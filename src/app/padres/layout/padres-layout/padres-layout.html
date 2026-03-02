@@ -1,0 +1,46 @@
+<div class="min-h-screen flex flex-col bg-gray-50 overflow-x-hidden">
+
+  <!-- NAVBAR -->
+  <app-navbar (toggleSidebar)="toggleSidebar()"></app-navbar>
+
+  <!-- BODY -->
+  <div class="flex flex-1 relative">
+
+    <!-- OVERLAY (solo móvil) -->
+    <div
+      *ngIf="isSidebarOpen"
+      (click)="closeSidebar()"
+      class="fixed inset-0 bg-black/40 z-30 lg:hidden">
+    </div>
+
+    <!-- SIDEBAR -->
+    <div
+      class="fixed lg:static top-16 lg:top-0 bottom-0 left-0 z-40
+             bg-white border-r border-gray-200
+             transform transition-transform duration-300 ease-out
+             lg:translate-x-0
+             w-72 lg:w-auto"
+      [class.-translate-x-full]="!isSidebarOpen"
+      [class.lg:w-72]="!isCollapsed"
+      [class.lg:w-20]="isCollapsed"
+      (click)="$event.stopPropagation()"
+    >
+      <app-sidebar
+        [title]="'Classroom'"
+        [isCollapsed]="isCollapsed"
+        (itemClick)="closeSidebar()"
+        class="h-full">
+      </app-sidebar>
+    </div>
+
+    <!-- CONTENT -->
+    <main
+      class="flex-1 overflow-auto bg-gray-50 p-4 sm:p-6"
+      [class.lg:ml-72]="!isCollapsed"
+      [class.lg:ml-20]="isCollapsed"
+    >
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>

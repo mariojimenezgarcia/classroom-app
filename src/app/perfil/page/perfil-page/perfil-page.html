@@ -1,0 +1,180 @@
+<!-- Perfil (editar) -->
+<div class="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+  <div class="mx-auto w-full max-w-[1300px]">
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+
+      <!-- Header -->
+      <div class="px-6 py-5 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+        <!-- IZQUIERDA -->
+        <div>
+          <h1 class="text-lg font-semibold text-gray-900">Mi perfil</h1>
+          <p class="text-sm text-gray-500 mt-1">
+            Actualiza tus datos y guarda los cambios.
+          </p>
+        </div>
+
+        <!-- DERECHA -->
+        <div class="flex flex-col items-end gap-3">
+
+          <!-- Código alumno (solo si es alumno) -->
+          <div
+            *ngIf="rol === 'alumno'"
+            class="bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2 text-right"
+          >
+            <p class="text-xs text-indigo-600 font-medium">
+              Código alumno
+            </p>
+            <p class="text-lg font-semibold text-indigo-800 tracking-widest">
+              {{ codigoAlumno }}
+            </p>
+          </div>
+
+          <!-- Botón cerrar sesión -->
+          <button
+            type="button"
+            (click)="logout()"
+            class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition">
+            Cerrar sesión
+          </button>
+
+        </div>
+
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loading" class="px-6 py-10 text-sm text-gray-600">
+        Cargando perfil...
+      </div>
+
+      <!-- Content -->
+      <form *ngIf="!loading"
+            class="px-6 py-6 space-y-6"
+            (ngSubmit)="guardar()">
+
+        <!-- Error / Success -->
+        <div *ngIf="error" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {{ error }}
+        </div>
+
+        <div *ngIf="successMsg" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          {{ successMsg }}
+        </div>
+
+        <!-- Foto de perfil -->
+        <div class="flex items-center gap-4">
+          <img
+            [src]="fotoSrc"
+            alt="Foto de perfil"
+            class="h-14 w-14 rounded-full object-cover border border-gray-200"
+          />
+
+          <div class="flex-1">
+            <p class="text-sm font-medium text-gray-900">Foto de perfil</p>
+
+            <div class="mt-3 flex items-center gap-2">
+              <label
+                class="inline-flex items-center h-10 px-4 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-sm font-medium text-gray-700 cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  (change)="onFotoSeleccionada($event)"
+                />
+                Subir foto
+              </label>
+
+              <button
+                type="button"
+                (click)="quitarFotoLocal()"
+                class="h-10 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700">
+                Quitar
+              </button>
+            </div>
+
+            <p *ngIf="fotoSeleccionadaNombre" class="mt-2 text-xs text-gray-500">
+              Seleccionado: <span class="font-semibold">{{ fotoSeleccionadaNombre }}</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Datos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <!-- Nombre -->
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700">
+              Nombre <span class="text-red-500">*</span>
+            </label>
+            <input
+              [(ngModel)]="nombre"
+              name="nombre"
+              type="text"
+              placeholder="Tu nombre"
+              class="mt-2 w-full h-11 rounded-xl border border-gray-200 px-4 text-sm outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-300"
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700">
+              Email <span class="text-red-500">*</span>
+            </label>
+            <input
+              [(ngModel)]="email"
+              name="email"
+              type="email"
+              placeholder="tucorreo@gmail.com"
+              class="mt-2 w-full h-11 rounded-xl border border-gray-200 px-4 text-sm outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-300"
+            />
+          </div>
+
+          <!-- Password -->
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700">Nueva contraseña</label>
+            <input
+              [(ngModel)]="password"
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              class="mt-2 w-full h-11 rounded-xl border border-gray-200 px-4 text-sm outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-300"
+            />
+            <p class="mt-2 text-xs text-gray-500">Déjala vacía si no quieres cambiarla.</p>
+          </div>
+
+          <!-- Confirm -->
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700">Confirmar contraseña</label>
+            <input
+              [(ngModel)]="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              placeholder="••••••••"
+              class="mt-2 w-full h-11 rounded-xl border border-gray-200 px-4 text-sm outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-300"
+            />
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-2 border-t border-gray-200 pt-6">
+          <button
+            type="button"
+            (click)="cancelar()"
+            class="h-10 px-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-sm font-medium text-gray-700"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            [disabled]="saving"
+            class="h-10 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-sm font-semibold text-white"
+          >
+            {{ saving ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
