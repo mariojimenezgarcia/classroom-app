@@ -9,9 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// <- (CAMBIO) usar "DefaultConnection" (coincide con ConnectionStrings__DefaultConnection en docker-compose)
+// ✅ PostgreSQL (Render) - usa ConnectionStrings:DefaultConnection
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // CORS (Angular dev)
 builder.Services.AddCors(options =>
@@ -77,12 +77,18 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Crear la BD si no existe (EnsureCreated).  <-- aquí está la magia
+// ✅ Aplicar migraciones automáticamente (recomendado en Render)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    // Si prefieres migraciones, cambiar a db.Database.Migrate();
-    db.Database.EnsureCreated();
+
+    var conn = db.Database.GetDbConnection().ConnectionString;
+
+    // Si no hay connection string (local sin Postgres), no intenta migrar
+    if (!string.IsNullOrWhiteSpace(conn))
+    {
+        db.Database.Migrate();
+    }
 }
 
 app.UseSwagger();
