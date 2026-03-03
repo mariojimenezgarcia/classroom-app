@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "eNPeKoBk6kw=",
+  "dgSpecHash": "JzxGWqC2v9Q=",
   "success": true,
-  "projectFilePath": "C:\\Users\\mario\\Desktop\\mis cursos\\Proyectos\\classroom\\classroom-back\\classroom\\classroom.csproj",
+  "projectFilePath": "C:\\Users\\mario\\Desktop\\mis cursos\\Proyectos\\classroom\\classroom-app\\classroom-back\\classroom\\classroom.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mario\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\mario\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
