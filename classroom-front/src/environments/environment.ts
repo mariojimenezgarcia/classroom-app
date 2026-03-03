@@ -1,3 +1,3 @@
 export const environment = {
-    apiUrl: 'https://localhost:7109',
+    apiUrl: 'https://classroom-api-kpjj.onrender.com',
 };
