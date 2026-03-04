@@ -53,7 +53,7 @@
 
         <!-- Candado -->
         <button
-          *ngIf="rol === 'profesor'"
+          *ngIf="rol === 'profesor' || rol === 'admin'"
           class="h-10 w-10 grid place-items-center rounded-full hover:bg-gray-100 transition"
           [routerLink]="['/home/mostrarCodigoAcceso', clase.id, ]"
           aria-label="Ver código de la clase"
@@ -89,7 +89,7 @@
           class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-200 z-50 overflow-hidden"
         >
           <button
-            *ngIf="rol === 'profesor'"
+            *ngIf="rol === 'profesor' || rol === 'admin'"
             (click)="editarClase(clase.id)"
             class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
           >

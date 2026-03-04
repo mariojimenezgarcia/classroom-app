@@ -46,7 +46,11 @@ export class Login {
         localStorage.setItem('nombre', res.nombre);
         localStorage.setItem('rol', res.rol);
         localStorage.setItem('userId', String(res.userId));
-        localStorage.setItem('fotoUrl', res.fotoUrl);
+        if (res.fotoUrl && String(res.fotoUrl).trim() && res.fotoUrl !== 'null') {
+          localStorage.setItem('fotoUrl', res.fotoUrl);
+        } else {
+          localStorage.removeItem('fotoUrl');
+        }
 
         const rol = (res.rol || '').toLowerCase().trim();
 
