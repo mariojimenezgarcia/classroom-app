@@ -59,7 +59,7 @@ namespace classroom.Controllers
         // Crea una nueva clase y asigna automáticamente al profesor creador
         [HttpPost]
         [Authorize(Roles = "profesor,admin")]
-        public async Task<IActionResult> CrearClase(ClaseCreateDto dto)
+        public async Task<IActionResult> CrearClase([FromBody] ClaseCreateDto dto)
         {
             int profesorId;
             try
@@ -71,36 +71,76 @@ namespace classroom.Controllers
                 return Unauthorized(new { message = ex.Message });
             }
 
-            string codigoAcceso = helper.GenerarCodigoAcceso();
+            if (dto == null)
+                return BadRequest(new { message = "Body inválido." });
 
-            var clase = new Clase
+            if (string.IsNullOrWhiteSpace(dto.nombre))
+                return BadRequest(new { message = "El nombre es obligatorio." });
+
+            if (string.IsNullOrWhiteSpace(dto.curso))
+                return BadRequest(new { message = "El curso es obligatorio." });
+
+            if (string.IsNullOrWhiteSpace(dto.aula))
+                return BadRequest(new { message = "El aula es obligatoria." });
+
+            if (string.IsNullOrWhiteSpace(dto.color))
+                return BadRequest(new { message = "El color es obligatorio." });
+
+            var codigoAcceso = helper.GenerarCodigoAcceso();
+
+            await using var tx = await db.Database.BeginTransactionAsync();
+
+            try
             {
-                Nombre = dto.nombre,
-                Curso = dto.curso,
-                Aula = dto.aula,
-                Color = dto.color,
-                UsuariosId = profesorId,
-                CodigoAcceso = codigoAcceso
-            };
+                var clase = new Clase
+                {
+                    Nombre = dto.nombre.Trim(),
+                    Curso = dto.curso.Trim(),
+                    Aula = dto.aula.Trim(),
+                    Color = dto.color.Trim(),
+                    UsuariosId = profesorId,
+                    CodigoAcceso = codigoAcceso
+                };
 
-            db.Clases.Add(clase);
-            await db.SaveChangesAsync();
+                db.Clases.Add(clase);
+                await db.SaveChangesAsync();
 
-            var inscripcion = new UsuarioClase
+                var inscripcion = new UsuarioClase
+                {
+                    UsuarioId = profesorId,
+                    ClaseId = clase.Id
+                };
+
+                db.UsuarioClase.Add(inscripcion);
+                await db.SaveChangesAsync();
+
+                await tx.CommitAsync();
+
+                return Ok(new
+                {
+                    message = "Clase creada correctamente",
+                    claseId = clase.Id,
+                    codigoAcceso
+                });
+            }
+            catch (DbUpdateException ex)
             {
-                UsuarioId = profesorId,
-                ClaseId = clase.Id
-            };
-
-            db.UsuarioClase.Add(inscripcion);
-            await db.SaveChangesAsync();
-
-            return Ok(new
+                await tx.RollbackAsync();
+                return StatusCode(500, new
+                {
+                    message = "Error guardando la clase en la base de datos.",
+                    detail = ex.InnerException?.Message ?? ex.Message
+                });
+            }
+            catch (Exception ex)
             {
-                message = "Clase creada correctamente",
-                claseId = clase.Id,
-                codigoAcceso = codigoAcceso
-            });
+                await tx.RollbackAsync();
+                return StatusCode(500, new
+                {
+                    message = "Error inesperado creando la clase.",
+                    detail = ex.Message
+                });
+            }
         }
 
         // Permite a un alumno unirse a una clase usando el código de acceso
