@@ -99,22 +99,20 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-// Crear carpeta Uploads si no existe
+// Static files
 var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "Uploads");
 Directory.CreateDirectory(uploadsPath);
 
-// Archivos estáticos normales (wwwroot si lo usas)
 app.UseStaticFiles();
-
-// Archivos subidos dinámicamente (/Uploads)
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsPath),
     RequestPath = "/Uploads"
 });
 
-// ✅ CORS antes de Auth
-app.UseCors("AllowAngular");
+app.UseRouting();                
+
+app.UseCors("AllowAngular");      
 
 app.UseAuthentication();
 app.UseAuthorization();

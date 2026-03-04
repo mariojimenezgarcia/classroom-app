@@ -21,6 +21,19 @@ namespace classroom.Controllers
             this.config = config;
         }
 
+        // ✅ Normaliza DateTime a UTC para columnas timestamptz (PostgreSQL)
+        private static DateTime ToUtc(DateTime dt)
+        {
+            return dt.Kind switch
+            {
+                DateTimeKind.Utc => dt,
+                DateTimeKind.Local => dt.ToUniversalTime(),
+                // Si viene sin zona (Unspecified), lo tratamos como UTC para evitar errores con Npgsql timestamptz
+                DateTimeKind.Unspecified => DateTime.SpecifyKind(dt, DateTimeKind.Utc),
+                _ => DateTime.SpecifyKind(dt, DateTimeKind.Utc)
+            };
+        }
+
         // Devuelve todas las publicaciones de una clase (solo si el usuario pertenece a la clase o es el creador)
         [HttpGet("{id}/publicaciones")]
         [Authorize(Roles = "alumno,profesor,admin")]
@@ -143,10 +156,12 @@ namespace classroom.Controllers
 
                 var fechaEntrega = dto.FechaEntrega.Value;
 
-                if (fechaEntrega.Kind == DateTimeKind.Unspecified)
-                    fechaEntrega = DateTime.SpecifyKind(fechaEntrega, DateTimeKind.Local);
+                // ✅ Normalizar a UTC para Postgres timestamptz
+                fechaEntrega = ToUtc(fechaEntrega);
+                dto.FechaEntrega = fechaEntrega;
 
-                if (fechaEntrega <= DateTime.Now)
+                // ✅ Comparar contra UtcNow
+                if (fechaEntrega <= DateTime.UtcNow)
                     return BadRequest(new { message = "La fecha y hora de entrega ya han pasado." });
             }
 
@@ -157,9 +172,10 @@ namespace classroom.Controllers
                 Tipo = dto.Tipo,
                 Titulo = string.IsNullOrWhiteSpace(dto.Titulo) ? null : dto.Titulo.Trim(),
                 Contenido = dto.Contenido!.Trim(),
-                FechaEntrega = dto.FechaEntrega,
+                FechaEntrega = dto.FechaEntrega,   // ya normalizada si aplica
                 Puntuacion = dto.Puntuacion,
-                FechaCreacion = DateTime.Now
+                // ✅ Guardar en UTC
+                FechaCreacion = DateTime.UtcNow
             };
 
             db.Publicaciones.Add(pub);
@@ -437,7 +453,8 @@ namespace classroom.Controllers
             }
 
             entrega.entregada = true;
-            entrega.fecha_entrega = DateTime.Now;
+            // ✅ Guardar en UTC
+            entrega.fecha_entrega = DateTime.UtcNow;
 
             await db.SaveChangesAsync();
 
