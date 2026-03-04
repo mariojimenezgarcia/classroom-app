@@ -24,8 +24,7 @@ builder.Services.AddCors(options =>
                 "https://classroom-mario.netlify.app"
             )
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowAnyMethod();
     });
 });
 
